@@ -1637,6 +1637,7 @@ GameObject:
   - component: {fileID: 8653783891124478039}
   - component: {fileID: 7851250897508715298}
   - component: {fileID: 5732725632389517416}
+  - component: {fileID: -7840400466951479200}
   m_Layer: 0
   m_Name: Saw
   m_TagString: Untagged
@@ -1704,6 +1705,18 @@ CapsuleCollider:
   m_Height: 5
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-7840400466951479200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5339565143929544134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5ee48efbd59043879801cede7bdd8fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6046748148174437292
 GameObject:
   m_ObjectHideFlags: 0
