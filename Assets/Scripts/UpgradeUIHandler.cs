@@ -1,58 +1,89 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using TMPro;
+using TMPro; // Thêm namespace của TextMesh Pro
+
+// Cấu trúc dữ liệu để lưu thông tin hiển thị của mỗi nâng cấp
+[System.Serializable]
+public class UpgradeUIData
+{
+    public UpgradeType type;
+    public string title;
+    [TextArea(2, 4)]
+    public string detail;
+    public Sprite icon;
+}
 
 public class UpgradeUIHandler : MonoBehaviour
 {
-    [Header("UI Elements")]
+    [Header("Cấu hình dữ liệu nâng cấp")]
+    [SerializeField] private List<UpgradeUIData> _upgradesDataList;
+
+    [Header("UI Option 1")]
+    [SerializeField] private TextMeshProUGUI _txtTitle1;  
+    [SerializeField] private TextMeshProUGUI _txtDetail1; 
+    [SerializeField] private Image _imgIcon1;
     [SerializeField] private Button _btnOption1;
+
+    [Header("UI Option 2")]
+    [SerializeField] private TextMeshProUGUI _txtTitle2;  
+    [SerializeField] private TextMeshProUGUI _txtDetail2; 
+    [SerializeField] private Image _imgIcon2;
     [SerializeField] private Button _btnOption2;
-    [SerializeField] private TextMeshProUGUI _txtOption1;
-    [SerializeField] private TextMeshProUGUI _txtOption2;
 
     public void ShowRandomUpgrade()
     {
-        Debug.Log("Generating upgrade options...");
-        List<UpgradeType> upgrades = new List<UpgradeType> { UpgradeType.BiggerSaw, UpgradeType.FasterSaw, UpgradeType.MoreDamage };
-        if(UpgradeManager.Instance.HasEmptySocket())
+        List<UpgradeUIData> availableData = new List<UpgradeUIData>();
+        
+        foreach (var data in _upgradesDataList)
         {
-            upgrades.Add(UpgradeType.NewSaw);
+            if (data.type == UpgradeType.NewSaw)
+            {
+                if (UpgradeManager.Instance != null && UpgradeManager.Instance.HasEmptySocket())
+                {
+                    availableData.Add(data);
+                }
+            }
+            else
+            {
+                availableData.Add(data);
+            }
         }
-        int r1 = Random.Range(0, upgrades.Count);
-        UpgradeType option1 = upgrades[r1];
-        upgrades.RemoveAt(r1);
-        int r2 = Random.Range(0, upgrades.Count);
-        UpgradeType option2 = upgrades[r2];
 
-        _txtOption1.text = GetUpgradeDescription(option1);
-        _txtOption2.text = GetUpgradeDescription(option2);
-            Debug.Log($"Upgrade Options: 1) {option1} - {GetUpgradeDescription(option1)}, 2) {option2} - {GetUpgradeDescription(option2)}");
-        _btnOption1.onClick.RemoveAllListeners();
-        _btnOption2.onClick.RemoveAllListeners();
-        _btnOption1.onClick.AddListener(() => OnUpgradeSelected(option1));
-        _btnOption2.onClick.AddListener(() => OnUpgradeSelected(option2));
-    }
-    private void OnUpgradeSelected(UpgradeType type)
-    {
-        UpgradeManager.Instance.ApplyUpgrade(type);
-        XPManager.Instance.FinishUpgrade();
-    }
-    private string GetUpgradeDescription(UpgradeType type)
-    {
-        switch (type)
-        {
-            case UpgradeType.BiggerSaw:
-                return "Increase saw size by 20%";
-            case UpgradeType.FasterSaw:
-                return "Increase saw rotation speed by 20";
-            case UpgradeType.MoreDamage:
-                return "Increase damage by 10";
-            case UpgradeType.NewSaw:
-                return "Add a new saw to an empty socket";
-            default:
-                return "";
-        }
+        if (availableData.Count < 2) return; 
+
+        int r1 = Random.Range(0, availableData.Count);
+        UpgradeUIData data1 = availableData[r1];
+        availableData.RemoveAt(r1);
+
+        int r2 = Random.Range(0, availableData.Count);
+        UpgradeUIData data2 = availableData[r2];
+
+        SetOptionUI(data1, _txtTitle1, _txtDetail1, _imgIcon1, _btnOption1);
+
+        SetOptionUI(data2, _txtTitle2, _txtDetail2, _imgIcon2, _btnOption2);
     }
 
+    private void SetOptionUI(UpgradeUIData data, TextMeshProUGUI titleTxt, TextMeshProUGUI detailTxt, Image iconImg, Button btn)
+    {
+        if (titleTxt != null) titleTxt.text = data.title;
+        if (detailTxt != null) detailTxt.text = data.detail;
+        if (iconImg != null) iconImg.sprite = data.icon;
+
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => OnSelectUpgrade(data.type));
+    }
+
+    private void OnSelectUpgrade(UpgradeType type)
+    {
+        if (UpgradeManager.Instance != null)
+        {
+            UpgradeManager.Instance.ApplyUpgrade(type);  // Gọi ApplyUpgrade
+        }
+
+        if(type!= UpgradeType.NewSaw && XPManager.Instance != null) // Nếu không phải NewSaw thì kết thúc nâng cấp ngay
+        {   
+            XPManager.Instance.FinishUpgrade();  
+        }
+    }
 }

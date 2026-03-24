@@ -11,7 +11,6 @@ public class XPManager : MonoBehaviour
 
     private float _currentXP = 0f;
     private int _upgradeCount = 0;
-    private bool _isPaused = false;
     [Header("UI Elements")]
     [SerializeField] private Slider _xpSlider;
     [SerializeField] private GameObject _upgradePanel;  // Panel to show when an upgrade is available
@@ -34,39 +33,32 @@ public class XPManager : MonoBehaviour
     public void AddXP(float amount)
     {
         _currentXP += amount;
-        UpdateUI();
-
-        if (_currentXP >= RequireXP)
+        while (_currentXP >= RequireXP)
         {
+            _currentXP -= RequireXP; 
+            _upgradeCount++;
+            
             TriggerUpgrade();
         }
+        
+        UpdateUI();
+        Debug.Log($"XP: {_currentXP:F1}/{RequireXP} | Upgrade Count: {_upgradeCount}");
     }
     private void TriggerUpgrade()
     {
-        if (_upgradePanel == null)
-        {
-            Debug.LogError("[XPManager] Upgrade panel not assigned in Inspector!");
-            return;
-        }
-
         Time.timeScale = 0f; // Pause the game
-        _isPaused = true;
         _upgradePanel.SetActive(true);
-        
-        var handler = _upgradePanel.GetComponent<UpgradeUIHandler>();
-        if (handler == null)
-        {
-            Debug.LogError("[XPManager] UpgradeUIHandler component not found on upgrade panel!");
-            return;
-        }
-        
-        handler.ShowRandomUpgrade();
+        _upgradePanel.GetComponent<UpgradeUIHandler>().ShowRandomUpgrade();
+    } 
+    public void HideUpgradePanel() // Hide panel for select saw socket
+    {
+        Time.timeScale = 0f; // Keep game paused during socket selection
+        _upgradePanel.SetActive(false);
     }
     public void FinishUpgrade()
     {
         _upgradePanel.SetActive(false);
         Time.timeScale = 1f; // Resume the game
-        _isPaused = false;
     }
     private void UpdateUI()
     {
