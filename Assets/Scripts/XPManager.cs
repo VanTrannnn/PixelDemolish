@@ -12,10 +12,13 @@ public class XPManager : MonoBehaviour
     private float _currentXP = 0f;
     private int _upgradeCount = 0;
     [Header("UI Elements")]
-    [SerializeField] private Slider _xpSlider;
+    [SerializeField] private Image _xpImage;
     [SerializeField] private GameObject _upgradePanel;  // Panel to show when an upgrade is available
+    [SerializeField] private GameObject _slot1;  // First upgrade option slot
+    [SerializeField] private GameObject _slot2;  // Second upgrade option slot
 
     public float RequireXP => _baseXPRequired + (_upgradeCount * _xpIncreasePerLevel);
+    public int UpgradeCount => _upgradeCount;
     private void Awake() {
         if (Instance == null)
         {
@@ -42,7 +45,6 @@ public class XPManager : MonoBehaviour
         }
         
         UpdateUI();
-        Debug.Log($"XP: {_currentXP:F1}/{RequireXP} | Upgrade Count: {_upgradeCount}");
     }
     private void TriggerUpgrade()
     {
@@ -60,11 +62,23 @@ public class XPManager : MonoBehaviour
         _upgradePanel.SetActive(false);
         Time.timeScale = 1f; // Resume the game
     }
+
+    public void DisableSlot2()
+    {
+        if (_slot2 != null)
+            _slot2.SetActive(false);
+    }
+
+    public void EnableSlot2()
+    {
+        if (_slot2 != null)
+            _slot2.SetActive(true);
+    }
     private void UpdateUI()
     {
-        if (_xpSlider != null)
+        if (_xpImage != null)
         {
-            _xpSlider.value = _currentXP / RequireXP;
+            _xpImage.fillAmount = _currentXP / RequireXP;
         }
     }
 }

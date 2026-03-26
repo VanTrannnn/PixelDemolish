@@ -8,6 +8,7 @@ public class BottomAddXPTrigger : MonoBehaviour
         if (other.TryGetComponent(out Cube cube))
         {
             XPManager.Instance.AddXP(1);
+            LevelProgressManager.Instance.NotifyPixelDestroyed();
             Destroy(other.gameObject);
         }
         //if per cubes
@@ -15,6 +16,7 @@ public class BottomAddXPTrigger : MonoBehaviour
         {
             int pixels = other.transform.childCount;
             XPManager.Instance.AddXP(pixels);
+            LevelProgressManager.Instance.NotifyPixelDestroyed(pixels);
             Destroy(other.gameObject);
         }
     }

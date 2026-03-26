@@ -17,6 +17,8 @@ public class UpgradeManager : MonoBehaviour
     public float globalDamageBonus = 0f;
 
     private bool _isSlectingSocket = false;
+    private int _sawsStillToPlace = 0;  // Track how many saws still need to be placed during initial setup
+    private bool _mustPlaceSawOnFirstUpgrade = false;  // Force NewSaw on first upgrade if no saws exist
 
     private void Awake() {
         if (Instance == null)
@@ -28,6 +30,40 @@ public class UpgradeManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        // Check if there are any saws on the level
+        if (!HasAnySaw())
+        {
+            _mustPlaceSawOnFirstUpgrade = true;
+            Debug.Log("No saws found on level. Player must place one via upgrade.");
+        }
+
+        // Trigger initial saw placement at level start
+        if (LevelManager.Instance != null)
+        {
+            int initialSawCount = LevelManager.Instance.GetInitialSawCountToPlace();
+            if (initialSawCount > 0)
+            {
+                StartInitialSawPlacement(initialSawCount);
+            }
+        }
+    }
+
+    private bool HasAnySaw()
+    {
+        return GameObject.FindGameObjectsWithTag("Saw").Length > 0;
+    }
+
+    private void StartInitialSawPlacement(int sawCount)
+    {
+        _sawsStillToPlace = sawCount;
+        _isSlectingSocket = true;
+        Time.timeScale = 0f;  // Pause game during initial setup
+        ApplyDotweenToEmptySockets();
+        Debug.Log($"Player must place {sawCount} saws to start the level");
     }
     private void Update() {
         if(_isSlectingSocket)
@@ -46,6 +82,16 @@ public class UpgradeManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+
+    public bool MustPlaceSawOnFirstUpgrade()
+    {
+        return _mustPlaceSawOnFirstUpgrade;
+    }
+
+    public void ResetMustPlaceSawFlag()
+    {
+        _mustPlaceSawOnFirstUpgrade = false;
     }
     public void ApplyUpgrade(UpgradeType type)
     {
@@ -97,22 +143,47 @@ public class UpgradeManager : MonoBehaviour
             }
         }
     }
+
+    private bool IsInitialPlacement()
+    {
+        return _sawsStillToPlace > 0;
+    }
     private void PlaceSawAt(Transform socket)
     {
-        _isSlectingSocket = false;
-        
-        // Step 3: Kill all socket animations and reset scale
+        // Kill all socket animations and reset scale
         KillAllSocketAnimations();
         
-        // Step 4: Instantiate new saw
+        // Instantiate new saw
         GameObject newSaw = Instantiate(sawPrefab, socket);
         newSaw.transform.localPosition = Vector3.zero;
         newSaw.transform.localRotation = Quaternion.identity;
 
         UpdateAllExistingSaws();
         
-        // Step 5: Resume game
-        XPManager.Instance.FinishUpgrade();
+        // Check if this is initial placement
+        if (IsInitialPlacement())
+        {
+            _sawsStillToPlace--;
+            if (_sawsStillToPlace <= 0)
+            {
+                // All initial saws placed, start the game
+                _isSlectingSocket = false;
+                Time.timeScale = 1f;
+                Debug.Log("Initial saw placement complete. Game started!");
+            }
+            else
+            {
+                // Still need to place more saws, show sockets again
+                ApplyDotweenToEmptySockets();
+                Debug.Log($"Place {_sawsStillToPlace} more saw(s)");
+            }
+        }
+        else
+        {
+            // Normal NewSaw upgrade flow
+            _isSlectingSocket = false;
+            XPManager.Instance.FinishUpgrade();
+        }
     }
     
     private void KillAllSocketAnimations()

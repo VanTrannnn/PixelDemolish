@@ -7,6 +7,32 @@ public class Cube : MonoBehaviour
 
     public int Id { get; set; }
 
+    private void Update()
+    {
+        // click for pc
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (Time.timeScale == 0)
+                return;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.gameObject == gameObject)
+            {
+                Detouch();
+            }
+        }
+
+        // touch for mobile
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            if (Time.timeScale == 0)
+                return;
+            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+            if (Physics.Raycast(ray, out RaycastHit hit) && hit.collider.gameObject == gameObject)
+            {
+                Detouch();
+            }
+        }
+    }
     [ContextMenu("Detouch cube")]
     public void Detouch()
     {
@@ -26,4 +52,5 @@ public class Cube : MonoBehaviour
         GetComponent<Collider>().enabled = false;
         transform.DOScale(0, 0.5f).OnComplete(() => Destroy(gameObject));
     }
+
 }
