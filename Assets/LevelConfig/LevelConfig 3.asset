@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05a245da03241f84fac12e46aa28aaef, type: 3}
   m_Name: LevelConfig 3
   m_EditorClassIdentifier: 
-  levelIndex: 2
-  initialSawCountToPlace: 2
-  levelName: Level 2
+  levelIndex: 3
+  initSawStart: 2
+  levelName: Level 4

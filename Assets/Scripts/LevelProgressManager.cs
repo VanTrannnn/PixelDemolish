@@ -17,8 +17,10 @@ public class LevelProgressManager : MonoBehaviour
     private void Awake() {
         if (Instance == null)
             Instance = this;
-        else
+        else if (Instance != this)
+        {
             Destroy(gameObject);
+        }
     }
     private void Start() {
         _levelText.text = $"Level {SceneManager.GetActiveScene().buildIndex + 1}";

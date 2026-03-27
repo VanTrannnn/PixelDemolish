@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LevelConfig 2
   m_EditorClassIdentifier: 
   levelIndex: 2
-  initialSawCountToPlace: 2
-  levelName: Level 2
+  initSawStart: 1
+  levelName: Level 3
