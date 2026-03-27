@@ -1,8 +1,8 @@
 **Prototype for game Pixel Demolish**
 ## 1. **Hướng dẫn mở Project và chạy**
 - Clone project or download zip.
-- Khởi động Unity Hub, chọn `Add project from disk` và trỏ đến thư mục chứa project.
-- Mở Scene đầu tiên và nhấn nút **Play**.
+- Khởi động Unity Hub, chọn `Add project from disk` và trỏ đến thư mục chứa project (**version 2022.3.62f1**).
+- Mở Scene đầu tiên và nhấn **Play**.
 
 ## 2. **Kiến trúc Code (Core Systems)**
 
