@@ -2311,7 +2311,7 @@ MonoBehaviour:
   - {fileID: 1813514074}
   - {fileID: 1495186903}
   globalScale: 1
-  globalRotationSpeed: 100
+  globalRotationSpeed: 1
   globalDamageBonus: 0
 --- !u!114 &863986465
 MonoBehaviour:
