@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Cube
   - Saw
+  - Socket
   layers:
   - Default
   - TransparentFX

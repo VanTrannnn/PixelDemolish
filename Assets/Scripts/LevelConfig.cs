@@ -4,9 +4,7 @@ using UnityEngine;
 public class LevelConfig : ScriptableObject
 {
     [Header("Level Settings")]
-    public int levelIndex;  // Tương ứng với SceneManager buildIndex
-    public int initialSawCountToPlace = 1;  // Số saw mà player phải đặt ở đầu level
+    public int levelIndex; 
+    public int initSawStart = 1; 
     public string levelName = "Level 1";
-    [TextArea(2, 4)]
-    public string description = "Destroy all cubes to complete the level";
 }

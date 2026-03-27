@@ -5,14 +5,17 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
     
-    [SerializeField] private LevelConfig[] _levelConfigs;  // Array chứa config cho các level
+    [SerializeField] private LevelConfig[] _levelConfigs;  
     private LevelConfig _currentLevelConfig;
 
     private void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
-        else
+            DontDestroyOnLoad(gameObject);
+        }
+        else if (Instance != this)
             Destroy(gameObject);
     }
 
@@ -24,27 +27,18 @@ public class LevelManager : MonoBehaviour
 
     public void LoadLevelConfig(int sceneIndex)
     {
-        // Index 0 = Menu, không cần load
-        if (sceneIndex == 0)
-            return;
 
-        // Index 1+ = Game levels
-        int levelIndex = sceneIndex - 1;
+        int levelIndex = sceneIndex;
         
-        if (levelIndex < _levelConfigs.Length && _levelConfigs[levelIndex] != null)
+        if (levelIndex >= 0 && levelIndex < _levelConfigs.Length && _levelConfigs[levelIndex] != null)
         {
             _currentLevelConfig = _levelConfigs[levelIndex];
-            Debug.Log($"Loaded level config: {_currentLevelConfig.levelName}");
-        }
-        else
-        {
-            Debug.LogError($"Level config not found for level index {levelIndex}!");
         }
     }
 
-    public int GetInitialSawCountToPlace()
+    public int GetInitialSawStart()
     {
-        return _currentLevelConfig != null ? _currentLevelConfig.initialSawCountToPlace : 1;
+        return _currentLevelConfig != null ? _currentLevelConfig.initSawStart : 1;
     }
 
     public LevelConfig GetCurrentLevelConfig()

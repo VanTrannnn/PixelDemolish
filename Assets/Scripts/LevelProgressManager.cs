@@ -9,6 +9,7 @@ public class LevelProgressManager : MonoBehaviour
     [Header("UI References")]
     [SerializeField] private Image _levelProgressImage;
     [SerializeField] private GameObject _winPanel;
+    [SerializeField] private TextMeshProUGUI _levelText;
 
     private int _totalPixelsInLevel;
     private int _destroyPixelsCount = 0;
@@ -20,11 +21,11 @@ public class LevelProgressManager : MonoBehaviour
             Destroy(gameObject);
     }
     private void Start() {
+        _levelText.text = $"Level {SceneManager.GetActiveScene().buildIndex + 1}";
         _winPanel.SetActive(false);
         
         if (_levelProgressImage == null)
         {
-            Debug.LogError("ERROR: Level Progress Image is not assigned in Inspector!");
             return;
         }
         
@@ -34,7 +35,6 @@ public class LevelProgressManager : MonoBehaviour
         _destroyPixelsCount = 0;
         _levelProgressImage.fillAmount = 0;
         
-        Debug.Log($"LevelProgressManager Start: Total pixels = {_totalPixelsInLevel}");
     }
     public void NotifyPixelDestroyed(int amount = 1) {
         if (_levelCompleted)
@@ -44,13 +44,11 @@ public class LevelProgressManager : MonoBehaviour
         
         if (_totalPixelsInLevel == 0)
         {
-            Debug.LogError("ERROR: _totalPixelsInLevel is 0!");
             return;
         }
         
         float fillAmount = _destroyPixelsCount / (float)_totalPixelsInLevel;
         _levelProgressImage.fillAmount = fillAmount;
-        Debug.Log($"Level Progress: {_destroyPixelsCount}/{_totalPixelsInLevel} ({fillAmount * 100:F1}%)");        
         
         if (_destroyPixelsCount >= _totalPixelsInLevel) {
             LevelCompleted();
@@ -61,7 +59,6 @@ public class LevelProgressManager : MonoBehaviour
         
         if (_winPanel == null)
         {
-            Debug.LogError("ERROR: Win Panel is not assigned in Inspector!");
             return;
         }
         
@@ -72,7 +69,7 @@ public class LevelProgressManager : MonoBehaviour
     
     public void NextLevel()
     {
-        Time.timeScale = 1f;  // Resume game before loading next level
+        Time.timeScale = 1f;  
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         int nextSceneIndex = currentSceneIndex + 1;
         
@@ -81,13 +78,9 @@ public class LevelProgressManager : MonoBehaviour
         {
             SceneManager.LoadScene(nextSceneIndex);
         }
-        else
-        {
-            Debug.LogWarning("No more levels available! Staying on current level.");
-        }
+        
     }
     
-    //save level scene index to player prefs
     public void SaveProgress()
     {
         PlayerPrefs.SetInt("CurrentLevel", SceneManager.GetActiveScene().buildIndex);

@@ -13,12 +13,12 @@ public class UpgradeManager : MonoBehaviour
 
     [Header("Current Stats")]
     public float globalScale = 1f;
-    public float globalRotationSpeed = 100f;
+    public float globalRotationSpeed = 1f;
     public float globalDamageBonus = 0f;
 
     private bool _isSlectingSocket = false;
-    private int _sawsStillToPlace = 0;  // Track how many saws still need to be placed during initial setup
-    private bool _mustPlaceSawOnFirstUpgrade = false;  // Force NewSaw on first upgrade if no saws exist
+    private int _sawsStillToPlace = 0;  
+    private bool _mustPlaceSawOnFirstUpgrade = false;  
 
     private void Awake() {
         if (Instance == null)
@@ -38,13 +38,12 @@ public class UpgradeManager : MonoBehaviour
         if (!HasAnySaw())
         {
             _mustPlaceSawOnFirstUpgrade = true;
-            Debug.Log("No saws found on level. Player must place one via upgrade.");
         }
 
         // Trigger initial saw placement at level start
         if (LevelManager.Instance != null)
         {
-            int initialSawCount = LevelManager.Instance.GetInitialSawCountToPlace();
+            int initialSawCount = LevelManager.Instance.GetInitialSawStart();
             if (initialSawCount > 0)
             {
                 StartInitialSawPlacement(initialSawCount);
@@ -61,9 +60,8 @@ public class UpgradeManager : MonoBehaviour
     {
         _sawsStillToPlace = sawCount;
         _isSlectingSocket = true;
-        Time.timeScale = 0f;  // Pause game during initial setup
+        Time.timeScale = 0f; 
         ApplyDotweenToEmptySockets();
-        Debug.Log($"Player must place {sawCount} saws to start the level");
     }
     private void Update() {
         if(_isSlectingSocket)
@@ -115,19 +113,15 @@ public class UpgradeManager : MonoBehaviour
     private void StartSocketSelection()
     {
         _isSlectingSocket = true;
-        // Step 1: Hide panel and pause game
         XPManager.Instance.HideUpgradePanel();
-        
-        // Step 2: Check empty sockets and apply dotween
         ApplyDotweenToEmptySockets();
     }
     
     private void ApplyDotweenToEmptySockets()
     {
-        // Start pulsing animation only on empty sockets with unique ID
         foreach(var s in sawSockets)
         {
-            if (s.childCount == 0) // Only animate empty sockets
+            if (s.childCount == 0) 
                 s.DOScale(1.2f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetUpdate(true).SetId("SocketPulse_" + s.GetInstanceID());
         }
     }
@@ -169,13 +163,10 @@ public class UpgradeManager : MonoBehaviour
                 // All initial saws placed, start the game
                 _isSlectingSocket = false;
                 Time.timeScale = 1f;
-                Debug.Log("Initial saw placement complete. Game started!");
             }
             else
             {
-                // Still need to place more saws, show sockets again
                 ApplyDotweenToEmptySockets();
-                Debug.Log($"Place {_sawsStillToPlace} more saw(s)");
             }
         }
         else
@@ -200,8 +191,8 @@ public class UpgradeManager : MonoBehaviour
         foreach (var saw in allSaws)
         {
             saw.transform.localScale = Vector3.one * globalScale;
-            saw.transform.rotation = Quaternion.identity; // Reset rotation (0,0,0)
-            saw.SetAnimatorSpeed(globalRotationSpeed); // Assuming base speed is 100
+            saw.transform.rotation = Quaternion.identity; 
+            saw.SetAnimatorSpeed(globalRotationSpeed); 
         }
     }
    
